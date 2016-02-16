@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+      <title>Lee Zamparo</title>
+      <link href='http://fonts.googleapis.com/css?family=Open+Sans:400italic,600italic,700italic,400,600,700' rel='stylesheet' type='text/css' />
+      <link href='http://fonts.googleapis.com/css?family=Merriweather:300' rel='stylesheet' type='text/css'/>
+      <link href='http://fonts.googleapis.com/css?family=Source+Code+Pro:200,400,700' rel='stylesheet' type='text/css'/>
+      <link rel="stylesheet" type="text/css" href="http://lzamparo.github.io/theme/css/icons.css"/>
+      <link rel="stylesheet" type="text/css" href="http://lzamparo.github.io/theme/css/styles.css"/>
+      <meta charset="utf-8" />
+  </head>
+
+  <body id="index">
+    <!-- header -->
+    <header class="siteheader">
+      <!-- site image -->
+        <div class= "siteimage">
+          <a class="nodec" href=https://en.gravatar.com/userimage/6827348/8ddec1ea955824dea50c908ad3154623.png?size=200>
+            <img width="200" height="200" src=https://en.gravatar.com/userimage/6827348/8ddec1ea955824dea50c908ad3154623.png?size=200>
+          </a>
+        </div>
+
+      <div class = "sitebanner">
+        <h1><a class="sitetitle nodec" href="http://lzamparo.github.io">Lee Zamparo</a></h1>
+        <h3 class ="sitesubtitle">1. Get the data 2. Learn a model 3. ??? 4. Knowledge</h3>
+        <!-- nav -->
+        <nav class="menu">
+          <ul>
+            <!-- menu items-->
+              <li><a class="nodec" href="/">Blog</a></li>
+              <li><a class="nodec" href="/pdfs/lee_cv.pdf">CV</a></li>
+            <!--pages-->
+                <li><a class="nodec" href="http://lzamparo.github.io/pages/about-me.html">About Me</a></li>
+            <!-- services icons -->
+              <li><a class="nodec icon-github" href="https://github.com/lzamparo"></a></li>
+              <li><a class="nodec icon-twitter" href="https://twitter.com/lzamparo"></a></li>
+          </ul>
+        </nav>
+      </div> <!-- sitebanner -->
+    </header>
+
+    <!-- content -->
+
+<section class="content">
+
+  <h3 class="posttitle">
+    <a class="nodec" href="/basset-multi-task-convolutional-networks-for-predicting-regions-chromatin-from-sequence.html" rel="bookmark" title="Permalink to Basset: multi-task convolutional networks for predicting regions chromatin from sequence">
+      Basset: multi-task convolutional networks for predicting regions chromatin from sequence
+    </a>
+  </h3>
+
+  <div class="postinfo">
+    <p class="published" title="2016-02-15T17:45:00-05:00">
+      Mon 15 February 2016
+    </p>
+
+  </div><!-- .postinfo -->
+
+  <div class="article">
+    <p>I've been reading a few papers recently that each involve training a deep network that takes input directly from sequence and predicts some aspect of 
+chromatin.  <a href="http://www.nature.com/nbt/journal/v33/n8/full/nbt.3300.html">Deep Bind</a> predicts protein-DNA binding, and 
+<a href="http://www.nature.com/nmeth/journal/v12/n10/full/nmeth.3547.html">DeepSEA</a> predicts the effect of SNPs on chromatin state.  The most recent paper, 
+and the one I find most accessible, is <a href="http://biorxiv.org/content/early/2015/10/05/028399">Basset</a>. Authored by David R. Kelley (from John Rinn's lab),
+as well as former U of T alumnus Jasper Snoek, this is a great paper which should make a lasting contribution to sequence modeling.</p>
+<h3>Summary</h3>
+<p>The authors build (and more importantly distribute) a deep CNN to learn functional activity of DNA sequences directly from the sequences themselves.<br />
+They trained Basset on DNA sequences from 2 million different loci to predict DNA accessibility.  They took DNAseI accessible peaks encoded as BED 
+files for 125 different cell types from ENCODE (and another 39 from Epigenomics Roadmap), extended each peak 300bp in each direction from the midpoint, 
+and merged proximal peaks.  These 600bp sequences were then encoded as one-hot 4 x 600 matrices.  For each sequence, the network had to 
+simultaneously predict whether this site was open or closed in each cell type.  </p>
+<p>They use mini-batch stochastic gradient descent (RMSprop) to train the network, with (now) standard tricks for regularization like batch-norm &amp; 
+dropout.  They also cleverly make use of Bayesian optimization to tune their hyper-parameters via the excellent 
+<a href="https://github.com/HIPS/Spearmint">Spearmint</a> package.  They compare to state of the art predictors that learn complex kernels (gkm-SVM in this case), 
+and win handily.  Satisfied with their ability to predict accessibility, they perform neat experiments of in-silico mutagenisis to try and nail down 
+which SNPs might have the greatest effect on accessibility.  They also inspect the final forms of their first layer convolutional filters, interpreting 
+them as PSSMs.  Here results seem mixed; some filters are clear matches for known TF binding sites, others are merely indicative of more general 
+aspects of local sequence state (AT rich regions, for example).  </p>
+<h3>My two cents</h3>
+<p>If a person from an NLP or computer vision background were to check out this model (pictured as figure 1), it might not elicit much 
+excitement.  "What's the big deal?  It's a convnet with multi-task binary output prediction".  The big deal is that only recently have people 
+figured out how to make convents work properly on sequence predition problems for biological sequences.  And from my perspective, this is the best 
+effort yet.  Not only because their code is most readily accessible, but also because their experiments are meticulously documented, and their data set 
+is readily compiled.  The authors considerable effort to produce a robust software tool that yields reproducible results is a huge step forward for 
+computational biology.  </p>
+<p>It took me a bit of extra effort to try this out.  For strange reasons, we can't run Torch natively on our GPU-capable cluster nodes.  It's related to 
+the version of CentOS running on each node, and the constraints for kernels &amp; version of glibc this entails.  Happily, docker now exists and can 
+stomp all goombas (<strong>n. m.</strong> dependency related problems); you'll find my version on <a href="https://hub.docker.com/r/lzamparo/basset/">docker hub</a>.</p>
+<p>I'm really interested in two extensions of this paper.  The first figuring out how to look at much longer input sequences.  We know from various other
+assays (e.g HiC) that there are longer genomic distance dependencies of cis-sequence which could determine accessibility, so finding an efficient way
+to consider longer input sequences would be interesting (maybe some attention mechanism so the model learns where to pay attention would help mitigate
+the computational burden).  The second is figuring out how to use these predicitons of accessibility to improve gene expression prediction.  By 
+combining a model like this with a dataset like GTex, I think we could get really interesting results.  </p>
+  </div><!-- .content -->
+
+</section>
+
+
+    <!-- footer -->
+    <footer>
+      <p>
+        © Lee Zamparo, license <a href=""> </a>
+        unless otherwise noted.
+        Generated by <a href= "http://docs.getpelican.com/">Pelican</a> with
+        <a href="http://github.com/porterjamesj/crowsfoot">crowsfoot</a> theme.
+      </p>
+    </footer>
+  </body>
+</html>
