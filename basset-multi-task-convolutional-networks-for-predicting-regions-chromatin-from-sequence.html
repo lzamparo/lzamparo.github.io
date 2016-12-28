@@ -31,7 +31,6 @@
               <li><a class="nodec" href="/">Blog</a></li>
               <li><a class="nodec" href="/pdfs/lee_cv.pdf">CV</a></li>
             <!--pages-->
-                <li><a class="nodec" href="http://lzamparo.github.io/pages/about-me.html">About Me</a></li>
             <!-- services icons -->
               <li><a class="nodec icon-github" href="https://github.com/lzamparo"></a></li>
               <li><a class="nodec icon-twitter" href="https://twitter.com/lzamparo"></a></li>
@@ -64,7 +63,7 @@ chromatin.  <a href="http://www.nature.com/nbt/journal/v33/n8/full/nbt.3300.html
 and the one I find most accessible, is <a href="http://biorxiv.org/content/early/2015/10/05/028399">Basset</a>. Authored by David R. Kelley (from John Rinn's lab),
 as well as former U of T alumnus Jasper Snoek, this is a great paper which should make a lasting contribution to sequence modeling.</p>
 <h3>Summary</h3>
-<p>The authors build (and more importantly distribute) a deep CNN to learn functional activity of DNA sequences directly from the sequences themselves.<br />
+<p>The authors build (and more importantly distribute) a deep CNN to learn functional activity of DNA sequences directly from the sequences themselves.<br>
 They trained Basset on DNA sequences from 2 million different loci to predict DNA accessibility.  They took DNAseI accessible peaks encoded as BED 
 files for 125 different cell types from ENCODE (and another 39 from Epigenomics Roadmap), extended each peak 300bp in each direction from the midpoint, 
 and merged proximal peaks.  These 600bp sequences were then encoded as one-hot 4 x 600 matrices.  For each sequence, the network had to 
